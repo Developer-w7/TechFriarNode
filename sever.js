@@ -166,24 +166,6 @@ res.json({status:false});
 
 });
 
-app.post('/fileupload',async(req,res)=>{
-  const FileEntry = new FileModel({
-
-    filename: "Test Name2",
-    userId: '648d4e5cf73ce300389a2154',
-    link: "http://",
-
-    
-  });
-
-
-
-    const resp=await FileEntry.save();
-
-    res.statusCode = 200;
-    res.json({message:'Entry Succeed',resp});
-
-  })
 
 
 
@@ -247,7 +229,8 @@ var upload = multer({
 
   app.get('/getFiles', async(req, res)=>{
 
-
+    const {id}=req.query;
+    console.log(id);
    
     // FileModel.find({userId:'648d4e5cf73ce300389a2154'})
     //   .populate('userId')
@@ -258,7 +241,7 @@ var upload = multer({
     //       res.status(200).json(doc);
     //   });
 try{
-      const records = await FileModel.find().where('userId').in(['648d4e5cf73ce300389a2154']).populate('userId').exec();
+      const records = await FileModel.find().where('userId').in([id]).populate('userId').exec();
     console.log(records);
            res.setHeader('Content-Type', 'text/plain');
           res.setHeader('Access-Control-Allow-Origin', '*');
