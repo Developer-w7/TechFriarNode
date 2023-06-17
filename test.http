@@ -1,0 +1,34 @@
+GET http://127.0.0.1:5004/
+
+
+###
+POST  http://127.0.0.1:5004/auth
+content-type: application/json
+
+{
+    "email": "test3@gmail.com",
+    "password": "12345678"  
+}
+
+
+###
+POST  http://127.0.0.1:5004/user/register
+content-type: application/json
+
+{
+    "email": "test23@gmail.com",
+    "reqPassword": "12345678"  
+}
+
+
+###
+POST  http://127.0.0.1:5004/user/updatePass
+content-type: application/json
+
+{
+    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGQ1NmNiOWM2MDRiYzRmYjY3NzFjYSIsInVzZXJuYW1lIjoidGVzdDIzQGdtYWlsLmNvbSIsImlhdCI6MTY4Njk4NDM5NiwiZXhwIjoxNjg2OTkxNTk2fQ.Ahs65telWfoEJMBkGnddXuk3383Htz1F6cnHdaySy9k",
+    "reqPassword": "12345678"  
+}
+
+
+
