@@ -196,8 +196,8 @@ var upload = multer({
 
     // res.status(200).json({records:"image"});
 
-   
-    console.log(req.files);
+    const {id}=req.query;
+    
     const reqFiles = [];
     const url = req.protocol + '://' + req.get('host')
     for (var i = 0; i < req.files.length; i++) {
@@ -207,7 +207,7 @@ var upload = multer({
  console.log(reqFiles)
     const FileEntry = new FileModel({
        
-        userId: '648d4e5cf73ce300389a2154',
+        userId: id,
         imgCollection: reqFiles
     });
     FileEntry.save().then(result => {
@@ -230,7 +230,7 @@ var upload = multer({
   app.get('/getFiles', async(req, res)=>{
 
     const {id}=req.query;
-    console.log(id);
+   
    
     // FileModel.find({userId:'648d4e5cf73ce300389a2154'})
     //   .populate('userId')
