@@ -1,5 +1,5 @@
 const Mongoose = require('mongoose');
-
+// const FileModel = require('./files.js')
 
 
 const UserSchema = Mongoose.Schema(
@@ -8,7 +8,8 @@ const UserSchema = Mongoose.Schema(
       
       userName: { type: String, default: "" },
       email: { type: String,required:true,unique:true},
-      password:   {type: String }
+      password:   {type: String },
+      // files: { type: Mongoose.Schema.ObjectId,ref:FileModel, required:false, index:true },
   
 
     },{ timestamps: true, collection: "tech_user" })

@@ -22,7 +22,7 @@ const verifyUserLogin = async (email,password)=>{
            // creating a JWT token
            token = jwt.sign({id:user._id,username:user.email,type:'user'},JWT_SECRET,{ expiresIn: '2h'})
           
-           return {status:'ok',token}
+           return {status:'ok',token,name:user.userName}
        }
        return {status:'error',error:'invalid password'}
    } catch (error) {

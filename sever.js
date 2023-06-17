@@ -10,6 +10,9 @@ var faker = require('faker');
 const bcrypt = require('bcryptjs');
 
 
+const multer = require('multer');
+const uuidv4 = require('uuid/v4');
+
 var cors = require('cors')
 
 
@@ -22,6 +25,7 @@ const Mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 var apiRouter = require("./routes/api");
 const UserModel = require('./models/user.js');
+const FileModel = require('./models/files.js');
 
 
 
@@ -35,8 +39,21 @@ connectToDb();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cors())
-
+app.use('/public', express.static('public'))
 app.use("/", apiRouter);
+
+
+// app.use((req, res, next) => {
+ 
+//   setImmediate(() => {
+//     next(new Error('Something went wrong'))
+//   })
+// })
+// app.use(function (err, req, res, next) {
+//   console.error(err.message)
+//   if (!err.statusCode) err.statusCode = 500
+//   res.status(err.statusCode).send(err.message)
+// })
 
 app.get('/',(req,res)=>{
     res.statusCode = 200;
@@ -149,29 +166,107 @@ res.json({status:false});
 
 });
 
-app.post('/lg',async(req,res)=>{
-    var params = req.params;
-    const query = req.query;
-    const body= req.body;
-  
-    // console.log(query);
-    // console.log(params);
-    // console.log(body);
-      const token = jwt.sign(
-          { user_id: "123", user_name: "tester", email:'e.gmail.com'},
-          secret,
-          {
-            expiresIn: "2h",
-          }
-        );
-          res.statusCode = 200;
-          res.setHeader('Accept', 'application/json',);
-          res.setHeader('Content-Type', 'application/json');
-          res.setHeader('Access-Control-Allow-Origin', '*');
-          
-          res.json({message:'Login Succeed',token});
+app.post('/fileupload',async(req,res)=>{
+  const FileEntry = new FileModel({
+
+    filename: "Test Name2",
+    userId: '648d4e5cf73ce300389a2154',
+    link: "http://",
+
+    
+  });
+
+
+
+    const resp=await FileEntry.save();
+
+    res.statusCode = 200;
+    res.json({message:'Entry Succeed',resp});
 
   })
+
+
+
+
+const DIR = './uploads/';
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, DIR);
+    },
+    filename: (req, file, cb) => {
+        const fileName = file.originalname.toLowerCase().split(' ').join('-');
+        cb(null, uuidv4() + '-' + fileName)
+    }
+});
+var upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || true) {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+        }
+    }
+});
+// const upload = multer({ dest: "uploads/" });
+  app.post('/uploadImages',upload.array("files"), (req, res, next) => {
+
+    // res.status(200).json({records:"image"});
+
+   
+    console.log(req.files);
+    const reqFiles = [];
+    const url = req.protocol + '://' + req.get('host')
+    for (var i = 0; i < req.files.length; i++) {
+        reqFiles.push(url + '/public/' + req.files[i].filename)
+    }
+
+ console.log(reqFiles)
+    const FileEntry = new FileModel({
+       
+        userId: '648d4e5cf73ce300389a2154',
+        imgCollection: reqFiles
+    });
+    FileEntry.save().then(result => {
+        res.status(200).json({
+           status:"ok",
+            message: "Done upload!",
+            userCreated: {
+                _id: result._id,
+                imgCollection: result.imgCollection
+            }
+        })
+    }).catch(err => {
+        console.log(err),
+            res.status(500).json({
+                error: err
+            });
+    })
+})
+
+  app.get('/getFiles', async(req, res)=>{
+
+
+   
+    // FileModel.find({userId:'648d4e5cf73ce300389a2154'})
+    //   .populate('userId')
+    //   .exec(function (err, doc) {
+    //       if(err) { res.status(500).json(err); return; };
+    //       res.setHeader('Content-Type', 'text/plain');
+    //       res.setHeader('Access-Control-Allow-Origin', '*');
+    //       res.status(200).json(doc);
+    //   });
+try{
+      const records = await FileModel.find().where('userId').in(['648d4e5cf73ce300389a2154']).populate('userId').exec();
+    console.log(records);
+           res.setHeader('Content-Type', 'text/plain');
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.status(200).json({status:"ok",records});
+}catch (e){
+  res.status(500).json(err); return; 
+}
+    });
 
 app.listen(port, host, () => {
     console.log(`Server running at http://${host}:${port}/`);
