@@ -39,9 +39,11 @@ connectToDb();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cors())
-app.use('/public', express.static('public'))
+// app.use('/public', express.static('public'))
+app.use('/uploads', express.static('uploads'))
 app.use("/", apiRouter);
-
+// const path = require('path')
+// app.use('/uploads', express.static(path.join(__dirname, 'public')))
 
 // app.use((req, res, next) => {
  
@@ -201,7 +203,7 @@ var upload = multer({
     const reqFiles = [];
     const url = req.protocol + '://' + req.get('host')
     for (var i = 0; i < req.files.length; i++) {
-        reqFiles.push(url + '/public/' + req.files[i].filename)
+        reqFiles.push(url + '/uploads/' + req.files[i].filename)
     }
 
  console.log(reqFiles)
